@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>群聊情报站</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="app-shell">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">鲸</div><div class="brand-text"><strong>群聊情报站</strong><span id="version">正在连接…</span></div></div>
+  <nav id="navigation" aria-label="插件导航">
+    <button type="button" data-page="overview" class="active"><span data-icon="grid"></span><span>总览</span></button>
+    <button type="button" data-page="forwards"><span data-icon="send"></span><span>转发记录</span><span id="badge-forwards" class="nav-count" hidden></span></button>
+    <button type="button" data-page="rules"><span data-icon="filter"></span><span>关键词规则</span></button>
+    <button type="button" data-page="summaries"><span data-icon="file"></span><span>总结任务</span><span id="badge-summaries" class="nav-count" hidden></span></button>
+    <button type="button" data-page="settings"><span data-icon="settings"></span><span>插件设置</span></button>
+  </nav>
+  <section id="sessions" class="sessions" aria-label="群聊会话">
+    <button id="session-toggle" class="session-toggle" type="button" aria-expanded="false" aria-controls="session-body"><span data-icon="users"></span><span id="session-current">群聊列表</span><span data-icon="chevron"></span></button>
+    <div id="session-body" class="session-body">
+      <div class="session-head"><span>群聊会话 <span id="session-count" class="count-label"></span></span></div>
+      <div class="search-box"><span data-icon="search"></span><input id="session-search" type="search" aria-label="搜索群聊" placeholder="搜索群名或群号"></div>
+      <div id="session-filter" class="segmented line" role="group" aria-label="按监控状态筛选"></div>
+      <div id="session-list" class="session-list"></div>
+    </div>
+  </section>
+  <div class="sidebar-bottom">
+    <div class="connection"><i id="connection-dot"></i><span id="connection-label">正在连接面板</span></div>
+    <button id="theme" class="theme-button" type="button"></button>
+  </div>
+</aside>
+<main class="workspace">
+  <header class="page-header">
+    <div class="page-title-box"><span id="page-avatar" class="page-avatar" aria-hidden="true" hidden></span><div class="page-title-text"><h1 id="page-title">总览</h1><p id="page-subtitle"></p></div></div>
+    <div class="header-actions">
+      <div id="ws-controls" class="ws-controls" hidden><span id="ws-status"></span><span id="ws-scope"></span></div>
+      <label class="auto-refresh" title="每 30 秒刷新当前页面；有弹窗打开或页面不可见时暂停"><input type="checkbox" id="auto-refresh" checked><span>自动刷新</span></label>
+      <span id="last-refresh" class="muted last-refresh"></span>
+      <button id="refresh" class="button secondary" type="button"><span data-icon="refresh"></span><span>刷新</span></button>
+    </div>
+  </header>
+  <div id="notice" role="status" aria-live="polite" class="notice" hidden></div>
+
+  <section data-view="overview">
+    <div id="stats" class="stats"></div>
+    <div class="overview-grid">
+      <section class="card"><div class="card-heading"><h2>消息动态</h2><span class="muted">近 7 天 · 北京时间 · 单位：条</span></div><div id="activity" class="activity"></div></section>
+      <section class="card"><div class="card-heading"><h2>运行状态</h2><button type="button" class="text-button" data-go="settings">管理设置 →</button></div><div id="runtime" class="runtime"></div></section>
+    </div>
+    <div class="overview-grid even">
+      <section class="card"><div class="card-heading"><h2>近期任务</h2><button type="button" class="text-button" data-go="forwards">转发记录 →</button></div><div id="recent-jobs"></div></section>
+      <section class="card"><div class="card-heading"><h2>活跃群聊</h2><button type="button" class="text-button" data-open-group="">全部群聊洞察 →</button></div><div id="overview-groups"></div></section>
+    </div>
+  </section>
+
+  <section data-view="group" hidden>
+    <div class="ws-bar">
+      <div id="ws-tabs" class="ws-tabs" role="tablist" aria-label="群聊工作区">
+        <button type="button" role="tab" data-ws-tab="insight"><span data-icon="bars"></span><span>洞察</span></button>
+        <button type="button" role="tab" data-ws-tab="ranking"><span data-icon="trophy"></span><span>榜单</span></button>
+        <button type="button" role="tab" data-ws-tab="messages"><span data-icon="message"></span><span>消息</span></button>
+        <button type="button" role="tab" data-ws-tab="summaries"><span data-icon="file"></span><span>总结</span></button>
+        <button type="button" role="tab" data-ws-tab="files"><span data-icon="folder"></span><span>文件</span></button>
+        <button type="button" role="tab" data-ws-tab="settings"><span data-icon="settings"></span><span>设置</span></button>
+      </div>
+      <div id="ws-range" class="segmented pill" role="group" aria-label="时间范围"></div>
+    </div>
+    <div id="ws-insight" class="ws-pane">
+      <div id="insight-subtabs" class="subtabs" role="tablist" aria-label="洞察分类">
+        <button type="button" role="tab" data-insight-sub="overview"><span data-icon="grid"></span><span>总览</span></button>
+        <button type="button" role="tab" data-insight-sub="time"><span data-icon="clock"></span><span>时间</span></button>
+        <button type="button" role="tab" data-insight-sub="types"><span data-icon="layers"></span><span>类型</span></button>
+      </div>
+      <div id="insight-overview" class="insight-pane"></div>
+      <div id="insight-time" class="insight-pane" hidden></div>
+      <div id="insight-types" class="insight-pane" hidden></div>
+    </div>
+    <div id="ws-ranking" class="ws-pane" hidden></div>
+    <div id="ws-messages" class="ws-pane" hidden>
+      <section class="card">
+        <div class="toolbar">
+          <div id="message-view" class="segmented" role="group" aria-label="消息视图"></div>
+          <div class="search-box grow"><span data-icon="search"></span><input id="message-search" type="search" aria-label="搜索消息内容" placeholder="搜索消息内容，多个关键词用空格分隔"></div>
+          <input id="message-sender" class="sender-input" type="search" aria-label="按发言人筛选" placeholder="发言人昵称或 QQ">
+          <button id="reset-messages" class="button secondary" type="button">重置</button>
+          <button id="export" class="button secondary" type="button" title="导出所选群的全部记录，不受搜索条件和时间范围影响"><span data-icon="download"></span><span>导出</span></button>
+        </div>
+        <p class="search-hint muted">聊天视图按时间排列，最新的在最下面，滚到顶部会自动加载更早的消息；点头像或昵称只看这个人。输入关键词时列出搜索结果，点一条跳到它在聊天里的位置。多个关键词需同时包含，三字及以上的词走全文索引。</p>
+        <div id="message-list"></div><div id="message-pager" class="pager"></div>
+      </section>
+    </div>
+    <div id="ws-summaries" class="ws-pane" hidden>
+      <section class="card">
+        <div class="summary-progress"><div><strong id="ws-summary-pending">—</strong><span id="ws-summary-progress" class="muted"></span></div><button id="ws-summary-config" type="button" class="text-button">总结设置 →</button></div>
+      </section>
+      <section class="card"><div id="ws-summary-list"></div><div id="ws-summary-pager" class="pager"></div></section>
+    </div>
+    <div id="ws-files" class="ws-pane" hidden></div>
+    <div id="ws-settings" class="ws-pane" hidden></div>
+  </section>
+
+  <section data-view="forwards" hidden>
+    <section class="card">
+      <div class="toolbar"><select id="forward-group" aria-label="转发记录按群筛选"></select><div id="forward-status" class="segmented" role="group" aria-label="转发状态筛选"></div><span class="toolbar-spacer"></span><button type="button" class="text-button" data-go="rules">编辑关键词规则 →</button></div>
+      <div id="forward-list"></div><div id="forward-pager" class="pager"></div>
+    </section>
+  </section>
+
+  <section data-view="rules" hidden>
+    <div class="rules-grid">
+      <div>
+        <section class="card"><div class="card-heading"><h2>匹配规则</h2><span class="muted">命中的新消息私发给接收人</span></div><div class="card-body" id="rule-fields"></div><p id="rules-group-note" class="info group-note" hidden></p></section>
+        <section class="card"><div class="card-heading"><h2>转发形式与同人上下文</h2><span class="muted">上下文仅卡片模式使用</span></div><div class="card-body" id="card-fields"></div></section>
+      </div>
+      <section class="card sticky-card"><div class="card-heading"><h2>规则测试</h2><span class="muted">不发送消息 · 不调用 AI</span></div><div class="card-body"><textarea id="preview-text" aria-label="规则测试文本" placeholder="粘贴一段群聊消息，输入后自动测试" rows="5"></textarea><div id="preview-result" class="preview-result" aria-live="polite"></div></div></section>
+    </div>
+  </section>
+
+  <section data-view="summaries" hidden>
+    <div class="subnav" role="tablist" aria-label="总结工作区"><button type="button" class="active" data-summary-tab="records" role="tab" aria-selected="true">任务记录</button><button type="button" data-summary-tab="config" role="tab" aria-selected="false">总结设置</button></div>
+    <div id="summary-records">
+      <section class="card"><div class="summary-progress"><div><strong id="summary-pending">—</strong><span id="summary-progress" class="muted"></span></div><button id="include-summary-history" type="button" class="button secondary small" hidden>将旧记录计入总结</button></div></section>
+      <section class="card">
+        <div class="toolbar"><select id="summary-group" aria-label="总结任务按群筛选"></select><div id="summary-status" class="segmented" role="group" aria-label="总结状态筛选"></div><span class="toolbar-spacer"></span><span id="summary-hint" class="muted"></span></div>
+        <div id="summary-list"></div><div id="summary-pager" class="pager"></div>
+      </section>
+    </div>
+    <section class="card" id="summary-config" hidden><div class="card-heading"><h2>自动总结设置</h2><span class="muted">每群独立计数，满额生成一批</span></div><div class="card-body" id="summary-fields"></div><p id="summary-group-note" class="info group-note" hidden></p></section>
+  </section>
+
+  <section data-view="settings" hidden>
+    <section class="card"><div class="card-heading"><h2>基础设置</h2></div><div class="card-body" id="basic-fields"></div></section>
+    <section class="card"><div class="card-heading"><div><h2>大肥鱼查群记录</h2><p class="heading-note">私聊大肥鱼问“群里有人说过 OpenWrt 5G 掉速怎么解决吗”，它会检索群聊原文作答并注明出处。</p></div></div><div class="card-body" id="chat-fields"></div></section>
+    <section class="card"><div class="card-heading"><h2>接收与投递</h2><span class="muted">以 QQ 私聊接收，不在来源群回复</span></div><div class="card-body" id="recipient-fields"></div></section>
+    <section class="card">
+      <div class="card-heading"><div><h2>监控范围</h2><p id="scope-summary" class="heading-note"></p></div><button id="scope-toggle" class="button secondary small" type="button" aria-expanded="false" aria-controls="scope-fields">编辑范围</button></div>
+      <div class="card-body" id="scope-fields" hidden></div>
+      <p class="card-foot muted">单个群的排除与恢复，可以在左侧群聊列表里打开该群，点右上角按钮立即生效。</p>
+    </section>
+    <section class="card"><div class="card-heading"><h2>调用预算与重试</h2></div><div class="card-body" id="budget-fields"></div></section>
+    <section class="card">
+      <div class="card-heading"><h2>断线后自动补录</h2><span class="muted">持久化进度 · 自动去重</span></div>
+      <div id="backfill-strip" class="backfill-strip"><span class="strip-icon" data-icon="history"></span><div class="strip-text"><strong>补录状态</strong><span id="backfill-summary" class="muted"></span></div><button id="backfill-toggle" type="button" class="text-button" aria-expanded="false" aria-controls="backfill-status">展开各群进度</button><button id="run-backfill" type="button" class="button secondary small">立即检查</button></div>
+      <div id="backfill-status" class="divided" hidden></div>
+      <div class="card-body" id="backfill-fields"></div>
+    </section>
+    <div class="info">记录不会自动删除。图片、语音和附件只记录类型标记；补录仅能取回 QQ 历史接口在回溯范围内返回的消息，撤回或删除的消息无法恢复。静默模式会阻止监控群里后续插件和默认聊天的回复。</div>
+  </section>
+
+  <footer id="savebar" class="savebar" hidden><div class="save-text"><strong id="save-title">有未保存的修改</strong><span id="save-detail"></span></div><button id="discard" type="button" class="button secondary">放弃修改</button><button id="save" type="button" class="button">保存全部修改</button></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</main></div>
+<dialog id="details-dialog" aria-labelledby="detail-title"><div class="dialog-header"><h2 id="detail-title">详情</h2><button id="close-details" type="button" class="icon-button" aria-label="关闭详情">×</button></div><div id="detail-body" class="dialog-body"></div><div id="detail-actions" class="dialog-actions"></div></dialog>
+<dialog id="confirm-dialog" class="confirm" aria-labelledby="confirm-title"><div class="dialog-header"><h2 id="confirm-title">确认操作</h2></div><p id="confirm-body"></p><div class="dialog-actions"><button id="confirm-no" type="button" class="button secondary">取消</button><button id="confirm-yes" type="button" class="button">确认</button></div></dialog>
+<script type="module" src="app.js"></script></body></html>

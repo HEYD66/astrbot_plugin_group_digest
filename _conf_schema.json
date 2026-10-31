@@ -1,0 +1,236 @@
+{
+  "enabled": {
+    "description": "启用记录与任务",
+    "hint": "关闭后暂停新记录及任务处理，历史数据保留。",
+    "type": "bool",
+    "default": true
+  },
+  "silent_mode": {
+    "description": "监控群静默模式",
+    "hint": "开启会阻止监控群后续插件及默认聊天回复，也包括其他插件的群指令；私聊不受影响。",
+    "type": "bool",
+    "default": true
+  },
+  "group_mode": {
+    "description": "监控范围",
+    "hint": "all：所有收到消息的QQ群；allowlist：仅下方指定群。",
+    "type": "string",
+    "default": "all",
+    "options": [
+      "all",
+      "allowlist"
+    ]
+  },
+  "groups": {
+    "description": "指定监控群",
+    "hint": "一行一个群号，仅 allowlist 模式使用。",
+    "type": "list",
+    "default": []
+  },
+  "excluded_groups": {
+    "description": "排除群",
+    "hint": "一行一个群号，优先于所有群/指定群。",
+    "type": "list",
+    "default": []
+  },
+  "platform_ids": {
+    "description": "来源机器人实例ID",
+    "hint": "留空为所有 OneBot v11 实例；填写机器人页面的实例ID，一行一个。",
+    "type": "list",
+    "default": []
+  },
+  "recipients": {
+    "description": "接收QQ",
+    "hint": "一行一个QQ号，以私聊接收。未配置时只记录，不产生转发或总结任务。",
+    "type": "list",
+    "default": []
+  },
+  "recipient_platform_id": {
+    "description": "发送机器人实例ID",
+    "hint": "留空使用消息来源实例；跨实例时填机器人页面实例ID。",
+    "type": "string",
+    "default": ""
+  },
+  "forward_enabled": {
+    "description": "启用关键词转发",
+    "hint": "命中后私聊给接收人；卡片模式可附带同群同人上下文，不向来源群回复。",
+    "type": "bool",
+    "default": true
+  },
+  "forward_format": {
+    "description": "转发形式",
+    "hint": "card：QQ合并转发聊天记录卡片，引用原消息；text：普通文字通知。原消息无法获取时卡片任务保留为失败，不伪造或静默改成文字。",
+    "type": "string",
+    "default": "card",
+    "options": [
+      "card",
+      "text"
+    ]
+  },
+  "forward_context_before": {
+    "description": "命中前同人消息条数",
+    "hint": "0～10，只取同群同一人的前文，受下方前后文时间范围限制。",
+    "type": "int",
+    "default": 3
+  },
+  "forward_context_after": {
+    "description": "命中后同人消息条数",
+    "hint": "0～10，卡片模式等待后文；收够后提前发送，未收够也会到时发送。",
+    "type": "int",
+    "default": 3
+  },
+  "forward_context_wait": {
+    "description": "等待后文秒数",
+    "hint": "0～300，默认10秒；0表示不等待，只发送已收到的上下文。仅卡片模式使用。",
+    "type": "int",
+    "default": 10
+  },
+  "forward_context_minutes": {
+    "description": "前后文最大时间范围（分钟）",
+    "hint": "1～60，默认5分钟；不把相隔很久的同一人消息混在同张卡片。",
+    "type": "int",
+    "default": 5
+  },
+  "keywords": {
+    "description": "关键词",
+    "hint": "一行一个，普通文本子串匹配，不使用正则。留空不触发转发。",
+    "type": "list",
+    "default": []
+  },
+  "match_mode": {
+    "description": "匹配模式",
+    "hint": "any：包含任一关键词；all：必须包含全部关键词。",
+    "type": "string",
+    "default": "any",
+    "options": [
+      "any",
+      "all"
+    ]
+  },
+  "exclude_keywords": {
+    "description": "排除关键词",
+    "hint": "包含任意排除词则不转发，一行一个。",
+    "type": "list",
+    "default": []
+  },
+  "case_sensitive": {
+    "description": "区分大小写",
+    "hint": "默认不区分英文字母大小写。",
+    "type": "bool",
+    "default": false
+  },
+  "summary_enabled": {
+    "description": "启用自动AI总结",
+    "hint": "仅在接收人已配置时收到的消息计数；每群独立，不补发未配置阶段的旧消息。",
+    "type": "bool",
+    "default": true
+  },
+  "summary_threshold": {
+    "description": "每群总结条数",
+    "hint": "2～10000；每凑齐这一数量即创建一批，剩余消息等待下一批。",
+    "type": "int",
+    "default": 100
+  },
+  "summary_provider_id": {
+    "description": "总结模型",
+    "hint": "留空跟随来源群当前聊天模型；只选择文本生成模型。",
+    "type": "string",
+    "default": "",
+    "_special": "select_provider"
+  },
+  "summary_instruction": {
+    "description": "总结要求",
+    "hint": "自定义关注主题、摘要结构和长度；不会调用插件工具或共享聊天历史。",
+    "type": "string",
+    "default": "用中文简明总结主要话题、重要结论、待办和有价值的信息。区分事实与猜测，保留消息编号作为依据。"
+  },
+  "summary_format": {
+    "description": "总结发送形式",
+    "hint": "image：排版成图片发送，链接另发一条文字，出图失败自动改发文字；text：纯文字分段发送。",
+    "type": "string",
+    "default": "image",
+    "options": [
+      "image",
+      "text"
+    ]
+  },
+  "summary_input_chars": {
+    "description": "单段资料字符上限",
+    "hint": "2000～60000。长批次分段整理后汇总；应小于模型上下文限制。",
+    "type": "int",
+    "default": 16000
+  },
+  "summary_max_calls_per_batch": {
+    "description": "每批AI调用上限",
+    "hint": "1～100，包含失败尝试。达到后任务失败并保留原始资料，可调高后手动重试。",
+    "type": "int",
+    "default": 16
+  },
+  "max_llm_calls_per_day": {
+    "description": "每日AI调用上限",
+    "hint": "按北京时间日历日，包含失败尝试；达到后暂停总结，次日继续。",
+    "type": "int",
+    "default": 100
+  },
+  "summary_timeout": {
+    "description": "单次AI超时（秒）",
+    "hint": "10～600；失败按重试次数处理。",
+    "type": "int",
+    "default": 120
+  },
+  "delivery_message_chars": {
+    "description": "每条私聊字符上限",
+    "hint": "300～3000，长内容拆为多条并附任务号。",
+    "type": "int",
+    "default": 1200
+  },
+  "retry_limit": {
+    "description": "自动失败次数上限",
+    "hint": "1～10，指数退避，达到后在任务页手动重试。发送失败不会重新生成已有摘要。",
+    "type": "int",
+    "default": 3
+  },
+  "backfill_enabled": {
+    "description": "断线自动补录",
+    "hint": "使用现有OneBot连接检查群历史；重连或插件重启后按持久化进度补录，重复消息不重复入库。",
+    "type": "bool",
+    "default": true
+  },
+  "backfill_interval": {
+    "description": "补录检查间隔（秒）",
+    "hint": "15～3600；定期核对可覆盖短暂断连，离线时等待恢复。默认60秒。",
+    "type": "int",
+    "default": 60
+  },
+  "backfill_max_hours": {
+    "description": "最大回溯小时数",
+    "hint": "1～720；超出此范围的缺口会显示受限状态。仅能获取QQ历史接口返回的消息。",
+    "type": "int",
+    "default": 72
+  },
+  "backfill_pages_per_cycle": {
+    "description": "每群每轮最大页数",
+    "hint": "1～50，每页最多100条；进度保存在数据库，下轮继续，避免长时间占用。",
+    "type": "int",
+    "default": 5
+  },
+  "backfill_summary_enabled": {
+    "description": "补录消息计入总结",
+    "hint": "补回的新消息在接收人已配置时计入每群总结；重复记录不重复计数。补录不会触发关键词转发。",
+    "type": "bool",
+    "default": true
+  },
+  "chat_search_enabled": {
+    "description": "允许私聊大肥鱼查群记录",
+    "hint": "开启后，接收QQ在私聊里问大肥鱼群里聊过什么时，它可以检索群聊原文作答；群聊和其他人调用一律拒绝。每次提问会消耗聊天模型调用。",
+    "type": "bool",
+    "default": true
+  },
+  "group_rules": {
+    "description": "单群规则",
+    "hint": "按群号保存的转发/总结规则覆盖项，在控制台群工作区的「设置」标签里编辑。",
+    "type": "dict",
+    "default": {},
+    "invisible": true
+  }
+}

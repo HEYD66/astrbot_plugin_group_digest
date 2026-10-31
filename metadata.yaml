@@ -1,0 +1,9 @@
+name: astrbot_plugin_group_digest
+display_name: 群聊情报站
+desc: 群消息持久记录、关键词条件转发、按消息数AI总结，附带侧栏控制台。
+version: v1.8.3
+author: HEYD66
+repo: https://github.com/HEYD66/astrbot_plugin_group_digest
+support_platforms:
+  - aiocqhttp
+astrbot_version: ">=4.29.1,<5"

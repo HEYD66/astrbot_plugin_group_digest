@@ -1,5 +1,5 @@
 "use strict";
-// 群聊情报站控制台 v1.6.0：仿 ChatLab 会话式布局。所有数据都以 textContent 写入，避免把群消息当作 HTML 渲染。
+// 群聊情报站控制台：仿 ChatLab 会话式布局。所有数据都以 textContent 写入，避免把群消息当作 HTML 渲染。
 const $ = id => document.getElementById(id);
 function node(tag, text, cls) { const n = document.createElement(tag); if (text !== undefined && text !== null) n.textContent = String(text); if (cls) n.className = cls; return n; }
 const store = {

@@ -1,0 +1,27 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # 总结出图的排版测试要用 Noto CJK 量字宽
+      - name: 安装中文字体
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+      - name: 安装依赖
+        run: pip install pillow
+      - name: 单元测试
+        run: python -m unittest discover -s tests -v
+      - name: 打包
+        run: python build.py
